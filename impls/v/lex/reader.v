@@ -70,7 +70,7 @@ fn read_str() {
 
 pub fn tokenize_regex(arg string) []string {
   source := arg + "\0 "
-  mut re := regex.regex_opt(r'([\-+()\s])|([0-9])*|(~@)') or { panic(err)}
+  mut re := regex.regex_opt(r'([\-+()\s])|([0-9])*|(~@)|(".*"?)') or { panic(err)}
   // mut re := regex.regex_opt(r'[0-9]*') or { panic(err)}
   mut lexer := Lexer{source, -1, [],"", source}
   mut start, mut end := 0, 0
