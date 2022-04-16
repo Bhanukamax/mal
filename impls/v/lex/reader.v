@@ -89,7 +89,8 @@ fn read_list(mut lexer &Lexer) MalType {
         match atom.value {
           ")" { }
           "EOF" {
-            panic ("bad EOF")
+            println("unexpected EOF")
+            return list
           }
           else {
             list.list << atom
