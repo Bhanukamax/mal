@@ -3,9 +3,8 @@ import lex
 import os
 
 fn b_read() string {
-    i := os.input("user> ")
-    println(lex.tokenize(i))
-    return i
+  i := os.input("user> ")
+  return i
 }
 
 fn b_eval(i string) string {
@@ -20,9 +19,9 @@ fn b_print(i string) {
 
 fn main() {
 
-    println(lex.tokenize_regex('~@(+ 123 45 "what a world")'))
+  println(lex.tokenize_regex('~@(+ 123 45 "what a world")'))
   //for {
-    //b_print(b_eval(b_read()))
+  //b_print(b_eval(b_read()))
   //}
 
 }
