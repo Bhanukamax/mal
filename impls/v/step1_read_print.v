@@ -19,8 +19,8 @@ fn b_print(i string) {
 
 fn main() {
 
-  //source := '(+ 123 55)(- 2 20)'
-  source := '(+ 123 55 (- 21 4 ) 77 88)'
+  source := '(+ 123 55 (55 55) 7 89)'
+  //source := '(+ 123 55 (- 21 4 ) 77 88)'
   lex.read_str(source)
   //for {
   //b_print(b_eval(b_read()))

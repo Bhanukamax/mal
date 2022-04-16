@@ -88,7 +88,12 @@ fn read_list(mut lexer &Lexer) MalType {
       }
       MalAtom {
         match atom.value {
-          ")" {}
+          ")" {
+            return list
+          }
+          "EOF" {
+            panic ("bad EOF")
+          }
           else {
             list.list << atom
           }
@@ -108,20 +113,17 @@ fn read_atom(mut lexer &Lexer) MalType {
 pub fn read_str(source string) {
   mut lexer := new_lexer(source + "\0")
 
+
   tokenize_regex(source, mut lexer)
   mut list := [] MalType{}
   for lexer.peek() != "EOF" {
-    println("for")
-    if lexer.peek() == "EOF" {
-      println("list")
-    }
-    list << read_form(mut &lexer)
+    //list << read_form(mut &lexer)
+   list << read_form(mut &lexer)
     lexer.next()
   }
+
   println(lexer.tokens)
-  println("list")
   println(list)
-  println(">>>>>>>>>>>")
 }
 
 
