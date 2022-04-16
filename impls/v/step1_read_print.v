@@ -20,7 +20,7 @@ fn b_print(i string) {
 
 fn main() {
 
-    println(lex.tokenize_regex("(+ 123 45)"))
+    println(lex.tokenize_regex("~@(+ 123 45)"))
   //for {
     //b_print(b_eval(b_read()))
   //}
