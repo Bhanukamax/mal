@@ -31,7 +31,7 @@ fn (mut l Lexer) next() string {
 }
 
 pub fn tokenize_regex(source string,mut lexer Lexer) {
-  mut re := regex.regex_opt(r'([\-+()\[\]{}\s\0])|([0-9a-zA-Z\-])*|(~@)|(".*"?)') or { panic(err)}
+  mut re := regex.regex_opt(r'([\-+\*\,()\[\]{}\s\0])|([0-9a-zA-Z\-])*|(~@)|(".*"?)') or { panic(err)}
 
 
   mut start, mut end := 0, 0
