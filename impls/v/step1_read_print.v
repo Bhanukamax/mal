@@ -1,8 +1,10 @@
+module main
+import reader
 import os
 
-fn b_read() string{
+fn b_read() string {
     i := os.input("user> ")
-    return i
+    return reader.tokenize(i)
 }
 
 fn b_eval(i string) string {
