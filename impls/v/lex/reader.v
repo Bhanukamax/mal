@@ -27,10 +27,9 @@ fn (mut l Lexer) next() string {
   return l.tokens[l.cur_pos - 1]
 }
 
-pub fn tokenize_regex(source string) []string {
-  mut re := regex.regex_opt(r'([\-+()\s])|([0-9])*|(~@)|(".*"?)') or { panic(err)}
+pub fn tokenize_regex(source string,mut lexer Lexer) {
+  mut re := regex.regex_opt(r'([\-+()\[\]{}\s\0])|([0-9a-zA-Z\-])*|(~@)|(".*"?)') or { panic(err)}
 
-  mut lexer := new_lexer(source + "\0 ")
 
   mut start, mut end := 0, 0
 
@@ -48,13 +47,24 @@ pub fn tokenize_regex(source string) []string {
     }
     start, end = re.match_string(lexer.cur_source)
     i++
+
+    if start == -1 && lexer.cur_source.len > 1 {
+      println ("unknown character ${lexer.cur_source[0].ascii_str()}")
+      break
+    }
     if i > 1000 || start == -1 {
       println("BEFORE BREAK: start = $start, end = $end, cur_source $lexer.cur_source, len: $lexer.cur_source.len, i > $i")
       break
     }
   }
-  return lexer.tokens
 }
 
+pub fn read_str(source string) {
+
+  mut lexer := new_lexer(source + "\0")
+
+  tokenize_regex(source, mut lexer)
+  println(lexer.tokens)
+}
 
 
