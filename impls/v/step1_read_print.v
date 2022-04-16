@@ -20,8 +20,9 @@ fn b_print(i string) {
 
 fn main() {
 
-  for {
-    b_print(b_eval(b_read()))
-  }
+    println(lex.tokenize_regex("(+ 123 45)"))
+  //for {
+    //b_print(b_eval(b_read()))
+  //}
 
 }
