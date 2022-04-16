@@ -1,4 +1,4 @@
-module mal
+module lex
 import regex
 
 struct Lexer {
@@ -64,7 +64,11 @@ fn (mut l Lexer) get_token() {
 }
 
 
-pub fn tokenize(arg string) string{
+fn read_str() {
+
+  }
+
+pub fn tokenize(arg string) []string{
   source := arg + "\0"
   mut lexer := Lexer{source, -1, [],""}
   println("source >>> $lexer.source")
@@ -73,7 +77,6 @@ pub fn tokenize(arg string) string{
     lexer.get_token()
   }
   lexer.next_char()
-  println(lexer.tokens)
   return lexer.tokens
 }
 

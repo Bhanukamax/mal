@@ -1,10 +1,11 @@
 module main
-import reader
+import lex
 import os
 
 fn b_read() string {
     i := os.input("user> ")
-    return reader.tokenize(i)
+    println(lex.tokenize(i))
+    return i
 }
 
 fn b_eval(i string) string {
