@@ -106,6 +106,15 @@ fn read_list(mut lexer &Lexer) MalType {
 }
 
 fn read_atom(mut lexer &Lexer) MalType {
+
+
+  mut re := regex.regex_opt(r'[0-9]*') or { panic(err)}
+  start, end := re.match_string(lexer.peek())
+  if start > -1 {
+  return MalAtom{TokenType.number, lexer.peek()}
+  }
+
+
   return MalAtom{TokenType.symbol, lexer.peek()}
 }
 
