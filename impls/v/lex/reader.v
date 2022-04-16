@@ -56,7 +56,6 @@ pub fn tokenize_regex(source string,mut lexer Lexer) {
       break
     }
     if i > 1000 || start == -1 {
-      println("BEFORE BREAK: start = $start, end = $end, cur_source $lexer.cur_source, len: $lexer.cur_source.len, i > $i")
       break
     }
   }
@@ -78,13 +77,12 @@ fn read_form(mut lexer &Lexer) MalType {
 }
 
 fn read_list(mut lexer &Lexer) MalType {
-  mut list := MalList {[]}
+  mut list := new_mal_list()
   for lexer.peek() != ")" {
     lexer.next()
     mut atom := read_form(mut &lexer)
     match mut atom {
       MalList {
-        println(">>>>LIST $atom")
         list.list << atom
       }
       MalAtom {
@@ -109,21 +107,22 @@ fn read_atom(mut lexer &Lexer) MalType {
 
 
   mut re := regex.regex_opt(r'[0-9]*') or { panic(err)}
-  start, end := re.match_string(lexer.peek())
+  start, _ := re.match_string(lexer.peek())
+
   if start > -1 {
-  return MalAtom{TokenType.number, lexer.peek()}
+    return MalAtom{TokenType.number, lexer.peek()}
   }
 
 
   return MalAtom{TokenType.symbol, lexer.peek()}
 }
 
-pub fn read_str(source string) {
+pub fn read_str(source string) MalList{
   mut lexer := new_lexer(source + "\0")
 
 
   tokenize_regex(source, mut lexer)
-  mut list := [] MalType{}
+  mut list := MalList{}
   for lexer.peek() != "EOF" {
     //list << read_form(mut &lexer)
     //list << read_form(mut &lexer)
@@ -131,8 +130,7 @@ pub fn read_str(source string) {
     mut atom := read_form(mut &lexer)
     match mut atom {
       MalList {
-        println(">>>>LIST $atom")
-        list << atom
+        list.list << atom
       }
       MalAtom {
         match atom.value {
@@ -142,7 +140,7 @@ pub fn read_str(source string) {
             panic ("bad EOF")
           }
           else {
-            list << atom
+            list.list << atom
           }
         }
       }
@@ -151,8 +149,9 @@ pub fn read_str(source string) {
     lexer.next()
   }
 
-  println(lexer.tokens)
-  println(list)
+  //println(lexer.tokens)
+  //println(list)
+  return list
 }
 
 
