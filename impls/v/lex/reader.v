@@ -11,7 +11,7 @@ struct Lexer {
 }
 
 fn new_lexer(str string) Lexer {
-   return Lexer{str, -1, [],"", str}
+  return Lexer{str, 0, [],"", str}
 }
 
 fn (mut l Lexer) add_token(token string) {
@@ -23,6 +23,9 @@ fn (l Lexer) peek() string {
 }
 
 fn (mut l Lexer) next() string {
+  if l.peek() == "EOF" {
+    return l.peek()
+  }
   l.cur_pos++
   return l.tokens[l.cur_pos - 1]
 }
@@ -57,14 +60,68 @@ pub fn tokenize_regex(source string,mut lexer Lexer) {
       break
     }
   }
+  lexer.add_token("EOF")
+}
+
+fn read_form(mut lexer &Lexer) MalType {
+
+  //lexer.next()
+  match lexer.peek() {
+    "(" {
+      //lexer.next()
+      return read_list(mut lexer)
+    }
+    else {
+      return read_atom(mut lexer)
+    }
+  }
+}
+
+fn read_list(mut lexer &Lexer) MalType {
+  mut list := MalList {[]}
+  for lexer.peek() != ")" {
+    lexer.next()
+    mut atom := read_form(mut &lexer)
+    match mut atom {
+      MalList {
+        list.list << atom
+      }
+      MalAtom {
+        match atom.value {
+          ")" {}
+          else {
+            list.list << atom
+          }
+        }
+      }
+    }
+  }
+  //lexer.next()
+
+  return list
+}
+
+fn read_atom(mut lexer &Lexer) MalType {
+  return MalAtom{TokenType.symbol, lexer.peek()}
 }
 
 pub fn read_str(source string) {
-
   mut lexer := new_lexer(source + "\0")
 
   tokenize_regex(source, mut lexer)
+  mut list := [] MalType{}
+  for lexer.peek() != "EOF" {
+    println("for")
+    if lexer.peek() == "EOF" {
+      println("list")
+    }
+    list << read_form(mut &lexer)
+    lexer.next()
+  }
   println(lexer.tokens)
+  println("list")
+  println(list)
+  println(">>>>>>>>>>>")
 }
 
 

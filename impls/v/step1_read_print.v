@@ -19,7 +19,8 @@ fn b_print(i string) {
 
 fn main() {
 
-  source := '~@(+ 123 [533 {55 dd what-aname DDD 44} true 4 6] 45 "what a world")'
+  //source := '(+ 123 55)(- 2 20)'
+  source := '(+ 123 55 (- 21 4 ) 77 88)'
   lex.read_str(source)
   //for {
   //b_print(b_eval(b_read()))
