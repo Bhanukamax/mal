@@ -84,13 +84,12 @@ fn read_list(mut lexer &Lexer) MalType {
     mut atom := read_form(mut &lexer)
     match mut atom {
       MalList {
+        println(">>>>LIST $atom")
         list.list << atom
       }
       MalAtom {
         match atom.value {
-          ")" {
-            return list
-          }
+          ")" { }
           "EOF" {
             panic ("bad EOF")
           }
@@ -118,7 +117,28 @@ pub fn read_str(source string) {
   mut list := [] MalType{}
   for lexer.peek() != "EOF" {
     //list << read_form(mut &lexer)
-   list << read_form(mut &lexer)
+    //list << read_form(mut &lexer)
+
+    mut atom := read_form(mut &lexer)
+    match mut atom {
+      MalList {
+        println(">>>>LIST $atom")
+        list << atom
+      }
+      MalAtom {
+        match atom.value {
+          ")" {
+          }
+          "EOF" {
+            panic ("bad EOF")
+          }
+          else {
+            list << atom
+          }
+        }
+      }
+    }
+
     lexer.next()
   }
 

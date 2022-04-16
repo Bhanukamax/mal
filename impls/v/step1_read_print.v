@@ -19,7 +19,7 @@ fn b_print(i string) {
 
 fn main() {
 
-  source := '(+ 123 55 (55 55) 7 89)'
+  source := '(+ 123 55 (- 55 55 (- 22 45)) 7 89)'
   //source := '(+ 123 55 (- 21 4 ) 77 88)'
   lex.read_str(source)
   //for {
