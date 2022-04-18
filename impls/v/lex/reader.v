@@ -39,9 +39,9 @@ fn (mut l Lexer) add_cur_word_token() {
 fn (l Lexer) peek_char() string {
   if  l.cur_char_pos >= l.source.len - 1 {
     return "\0"
-  } else {
-    return l.source[l.cur_char_pos].ascii_str()
   }
+
+  return l.source[l.cur_char_pos].ascii_str()
 }
 
 fn (mut l Lexer) next_char() string {
