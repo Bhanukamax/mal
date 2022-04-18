@@ -1,5 +1,6 @@
 module lex
 import regex
+import util
 
 struct Lexer {
   source string
@@ -36,8 +37,16 @@ fn (mut l Lexer) add_cur_word_token() {
   l.tokens << l.source[l.cur_char_pos].ascii_str()
 }
 
+fn (l Lexer) peek_next_char() string {
+  if  l.cur_char_pos > l.source.len - 1 {
+    return "\0"
+  }
+
+  return l.source[l.cur_char_pos + 1].ascii_str()
+}
+
 fn (l Lexer) peek_char() string {
-  if  l.cur_char_pos >= l.source.len - 1 {
+  if  l.cur_char_pos > l.source.len - 1 {
     return "\0"
   }
 
@@ -66,16 +75,39 @@ fn (mut l Lexer) next() string {
   return l.tokens[l.cur_pos - 1]
 }
 
-pub fn tokenize(mut lexer &Lexer) {
+pub fn tokenize(mut l &Lexer) {
 
-  for lexer.peek_char() != "\0" {
-    println("test")
-    lexer.add_cur_char_token()
-    lexer.next_char()
+  for l.peek_char() != "\0" {
+
+    if l.peek_char() == "(" {
+      l.add_cur_char_token()
+      l.next_char()
+      continue
+    }
+
+    if l.peek_char() == "-" {
+      println("got -")
+      next_char := l.peek_next_char()
+      if util.char_eq_any(next_char, [" ", ")","\0"]) == false{
+        mut word := ""
+        for  util.char_eq_any(l.peek_char(), [" ", ")","\0"]) == false {
+          println(word)
+          word += l.next_char()
+        }
+        l.add_token(word)
+        continue
+      }
+        l.add_cur_char_token()
+      l.next_char()
+    }
+
+
+    l.add_cur_char_token()
+    l.next_char()
   }
-  lexer.add_token("EOF")
-  println(lexer)
-  println(lexer.tokens)
+
+  println(l.tokens)
+  l.add_token("EOF")
 }
 
 pub fn tokenize_regex(source string,mut lexer Lexer) {
