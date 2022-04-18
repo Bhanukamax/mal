@@ -8,14 +8,50 @@ struct Lexer {
   tokens []string
   cur_char string
   cur_source string
+  cur_char_pos int
+  cur_word string
 }
 
 fn new_lexer(str string) Lexer {
-  return Lexer{str, 0, [],"", str}
+  return Lexer {
+    source: str
+    cur_pos: 0
+    tokens: []
+    cur_char: ""
+    cur_source: str
+    cur_char_pos: 0
+    cur_word: ""
+  }
 }
 
 fn (mut l Lexer) add_token(token string) {
   l.tokens << token
+}
+
+fn (mut l Lexer) add_cur_char_token() {
+  l.tokens << l.source[l.cur_char_pos].ascii_str()
+}
+
+fn (mut l Lexer) add_cur_word_token() {
+  l.tokens << l.source[l.cur_char_pos].ascii_str()
+}
+
+fn (l Lexer) peek_char() string {
+  if  l.cur_char_pos >= l.source.len - 1 {
+    return "\0"
+  } else {
+    return l.source[l.cur_char_pos].ascii_str()
+  }
+}
+
+fn (mut l Lexer) next_char() string {
+  peek := l.peek_char()
+
+  if  peek != "\0" {
+    l.cur_char_pos += 1
+  }
+
+  return peek
 }
 
 fn (l Lexer) peek() string {
@@ -30,8 +66,20 @@ fn (mut l Lexer) next() string {
   return l.tokens[l.cur_pos - 1]
 }
 
+pub fn tokenize(mut lexer &Lexer) {
+
+  for lexer.peek_char() != "\0" {
+    println("test")
+    lexer.add_cur_char_token()
+    lexer.next_char()
+  }
+  lexer.add_token("EOF")
+  println(lexer)
+  println(lexer.tokens)
+}
+
 pub fn tokenize_regex(source string,mut lexer Lexer) {
-  mut re := regex.regex_opt(r'([\-+\*\,()\[\]{}\s\0])|([0-9a-zA-Z\-])*|(~@)|(".*"?)') or { panic(err)}
+  mut re := regex.regex_opt(r'([\-][\s])|([+\*\,()\[\]{}\s\0])|([\-]?[0-9a-zA-Z\->\|\]*)|(~@)') or { panic(err)}
 
 
   mut start, mut end := 0, 0
@@ -45,7 +93,7 @@ pub fn tokenize_regex(source string,mut lexer Lexer) {
     }
     token := lexer.cur_source[start..end]
     lexer.cur_source = lexer.cur_source[end..]
-    if token != " " {
+    if token != " " && token != "," {
       lexer.add_token(token)
     }
     start, end = re.match_string(lexer.cur_source)
@@ -59,6 +107,7 @@ pub fn tokenize_regex(source string,mut lexer Lexer) {
       break
     }
   }
+  println(lexer.tokens)
   lexer.add_token("EOF")
 }
 
@@ -119,10 +168,11 @@ fn read_atom(mut lexer &Lexer) MalType {
 }
 
 pub fn read_str(source string) MalList{
-  mut lexer := new_lexer(source + "\0")
+  mut lexer := new_lexer(source)
 
 
-  tokenize_regex(source, mut lexer)
+  //tokenize_regex(source, mut lexer)
+  tokenize(mut lexer)
   mut list := MalList{}
   for lexer.peek() != "EOF" {
     //list << read_form(mut &lexer)
