@@ -6,7 +6,11 @@ let acc_char_to_string chars =
 
 let is_digit c = Char.(c >= '0' && c <= '9')
 let is_alpha c = Char.(c >= 'a' && c <= 'z') || Char.(c >= 'A' && c <= 'Z')
-let is_valid_symbol c = List.mem c [ '*'; '+'; '-'; '%'; '@'; '\\' ]
+
+let is_valid_symbol c =
+  List.mem c [ '!'; '{'; '}'; '*'; '+'; '-'; '%'; '~'; '`'; '@'; '\\' ]
+;;
+
 let is_number_prefix c = Char.(c = '-')
 
 let rec read_string (acc : char list) = function
