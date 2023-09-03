@@ -13,6 +13,6 @@ let rec pr_str mal =
   match mal with
   | MalAtom atom -> string_of_token atom
   | MalList list ->
-    let text = List.map pr_str list |> String.concat "" in
-    text
+    let text = List.map pr_str list |> String.concat " " in
+    "(" ^ text ^ ")"
 ;;

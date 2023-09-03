@@ -2,9 +2,9 @@ OCAMLC = ocamlc
 
 TARGETS = step0_repl step1_read_print
 
-step0_repl:
+step0_repl: clean
 	$(OCAMLC) -o step0_repl types.ml debug_printers.ml tokenizer.ml reader.ml printer.ml step0_repl.ml
-step1_read_print:
+step1_read_print: clean
 	$(OCAMLC) -o step1_read_print types.ml debug_printers.ml tokenizer.ml reader.ml printer.ml step1_read_print.ml
 
 build:
