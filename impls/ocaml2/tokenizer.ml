@@ -6,21 +6,15 @@ let acc_char_to_string chars =
 
 let is_digit c = Char.(c >= '0' && c <= '9')
 let is_alpha c = Char.(c >= 'a' && c <= 'z') || Char.(c >= 'A' && c <= 'Z')
-let is_valid_symbol c = List.mem c [ '*'; '+'; '-'; '%'; '@' ]
+let is_valid_symbol c = List.mem c [ '*'; '+'; '-'; '%'; '@'; '\\' ]
 let is_number_prefix c = Char.(c = '-')
 
-(* let last_char_eq (eq: char) (char_list: char list): bool = *)
-(* List.rev char *)
-
-let rec read_string (acc : char list) (char_list : char list) =
-  (* print_endline "inside read_string"; *)
-  (* let str = List.map Char.escaped acc |> String.concat "" in *)
-  (* print_endline ("char list: " ^ str); *)
-  match acc, char_list with
-  | last :: _, '"' :: rest when last = '\\' -> read_string ('"' :: acc) rest
-  | _, '"' :: rest -> acc, rest
-  | _, c :: rest -> read_string (c :: acc) rest
-  | _, rest -> raise UN_TERMINATED_STRING_EXCEPTION
+let rec read_string (acc : char list) = function
+  | '\\' :: '\\' :: rest -> read_string ('\\' :: '\\' :: acc) rest
+  | '\\' :: '"' :: rest -> read_string ('"' :: acc) rest
+  | '"' :: rest -> acc, rest
+  | c :: rest -> read_string (c :: acc) rest
+  | [] -> raise UN_TERMINATED_STRING_EXCEPTION
 ;;
 
 let rec read_symbol acc = function
