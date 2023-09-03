@@ -6,11 +6,8 @@ let acc_char_to_string chars =
 
 let is_digit c = Char.(c >= '0' && c <= '9')
 let is_alpha c = Char.(c >= 'a' && c <= 'z') || Char.(c >= 'A' && c <= 'Z')
-
-let is_valid_symbol c =
-  List.mem c [ '!'; '{'; '}'; '*'; '+'; '-'; '%'; '~'; '`'; '@'; '\\' ]
-;;
-
+let is_valid_symbol c = List.mem c [ '{'; '}'; '*'; '+'; '-'; '%'; '~'; '`'; '@'; '\\' ]
+let should_escape c = List.mem c [ '#'; '|'; '!'; '~'; '^' ]
 let is_number_prefix c = Char.(c = '-')
 
 let rec read_string (acc : char list) = function
@@ -38,19 +35,22 @@ let rec tokenize (chars : char list) : token list =
   | ',' :: rest -> tokenize rest
   | '(' :: rest -> LParen :: tokenize rest
   | ')' :: rest -> RParen :: tokenize rest
+  (* string *)
   | '"' :: rest ->
     let token, rest = read_string [] rest in
     String (acc_char_to_string token) :: tokenize rest
-  | c :: rest when is_alpha c || is_valid_symbol c ->
-    let token, rest = read_symbol [ c ] rest in
-    Symbol (token |> acc_char_to_string) :: tokenize rest
   | sign :: c :: rest when is_number_prefix sign && is_digit c ->
     let num_token, rest = read_number [ c; sign ] rest in
     Number (acc_char_to_string num_token) :: tokenize rest
   | c :: rest when is_digit c ->
     let num_token, rest = read_number [ c ] rest in
     Number (acc_char_to_string num_token) :: tokenize rest
-  | _ :: rest -> UNKNOWN :: tokenize rest
+  | c :: rest when should_escape c ->
+    let token, rest = read_symbol [ c; '\\'; '\\' ] rest in
+    Symbol (token |> acc_char_to_string) :: tokenize rest
+  | c :: rest when is_alpha c || is_valid_symbol c ->
+    let token, rest = read_symbol [ c ] rest in
+    Symbol (token |> acc_char_to_string) :: tokenize rest
   | _ -> []
 ;;
 

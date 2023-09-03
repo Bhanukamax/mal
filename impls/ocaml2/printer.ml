@@ -6,7 +6,8 @@ let rec pr_str mal =
   let string_of_token = function
     | LParen -> "("
     | RParen -> ")"
-    | Number s | String s | Symbol s -> s
+    | String s -> "\"" ^ s ^ "\""
+    | Number s | Symbol s -> s
     | UNKNOWN -> "UNKNOWN"
     | EOF -> "EOF"
   in

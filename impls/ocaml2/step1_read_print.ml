@@ -14,6 +14,7 @@ let rec rep () =
     try input |> read |> eval |> print with
     | UN_TERMINATED_STRING_EXCEPTION -> print_endline "end of input"
     | ILLEGAL_OPERATION _ -> print_endline "end of input"
+    | UNEXPECTED_STATE _ -> print_endline "end of input"
   in
   rep ()
 ;;
