@@ -1,6 +1,7 @@
 open OUnit2
 open Types
 open Reader
+open Tokenizer
 open Debug_printers
 
 let mal_assert result expected = assert_equal result expected ~printer:string_of_mal
@@ -179,3 +180,45 @@ let mal_test_suite =
 
 (* let _ = run_test_tt_main test_suite *)
 let _ = run_test_tt_main mal_test_suite
+
+let assert_tokens result expected =
+  assert_equal result expected ~printer:string_of_token_list
+;;
+
+let tokenize_one _ =
+  let got = Tokenizer.tokenize "1" in
+  let expected = [ Number "1" ] in
+  assert_tokens expected got
+;;
+
+let tokenize_two _ =
+  let got = Tokenizer.tokenize "1 \"one\" foo ( )" in
+  let expected = [ Number "1"; String "one"; Symbol "foo"; LParen; RParen ] in
+  assert_tokens expected got
+;;
+
+let tokenize_three _ =
+  let got = Tokenizer.tokenize "1 -11 \"one\"" in
+  let expected =
+    [ Number "1"; Number "-11"; String "one"]
+  in
+  assert_tokens expected got
+;;
+
+let tokenizer_test_suit =
+  "test suite for sum"
+  >::: [ ("empty" >:: fun _ -> assert_equal 0 0)
+         (* ; "top level one atom" >:: one_atom *)
+         (* ; "top level one atom" >:: empty_sexp *)
+         (* ; "top level one atom" >:: two_empty_sexp *)
+         (* ; "top level one atom" >:: mal_many_atom *)
+       ; "top level one atom" >:: tokenize_one
+       ; "top level one atom" >:: tokenize_two
+       ; "top level one atom" >:: tokenize_three
+         (* ; "one atom sexp" >:: one_atom_sexp *)
+         (* ; "tokenize and parse (1 2)" >:: mal_test_one *)
+         (* ; "tokenize and parse (1 2 (3 4))" >:: mal_test_two *)
+       ]
+;;
+
+let _ = run_test_tt_main tokenizer_test_suit
