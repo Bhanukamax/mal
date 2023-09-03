@@ -29,6 +29,7 @@ let rec read_number acc = function
 let rec tokenize (chars : char list) : token list =
   match chars with
   | ' ' :: rest -> tokenize rest
+  | ',' :: rest -> tokenize rest
   | '(' :: rest -> LParen :: tokenize rest
   | ')' :: rest -> RParen :: tokenize rest
   | '"' :: rest ->
