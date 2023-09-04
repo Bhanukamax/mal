@@ -199,9 +199,7 @@ let tokenize_two _ =
 
 let tokenize_three _ =
   let got = Tokenizer.tokenize "1 -11 \"one\"" in
-  let expected =
-    [ Number "1"; Number "-11"; String "one"]
-  in
+  let expected = [ Number "1"; Number "-11"; String "one" ] in
   assert_tokens expected got
 ;;
 

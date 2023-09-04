@@ -12,12 +12,12 @@ build:
 
 test:
 	rm -rf ./_build/test_reader
-	ocamlfind ocamlc -o _build/reader_test -I +ounit -linkpkg -package ounit2 types.ml debug_printers.ml tokenizer.ml reader.ml reader_test.ml
+	ocamlfind ocamlc -o _build/reader_test -I +ounit -linkpkg -package ounit2,str types.ml debug_printers.ml tokenizer.ml reader.ml reader_test.ml
 	./_build/reader_test
 
 test.t:
 	rm -rf ./_build/tokenizer_test
-	ocamlfind ocamlc -o _build/tokenizer_test -I +ounit -linkpkg -package ounit2 types.ml debug_printers.ml tokenizer.ml reader.ml tokenizer_test.ml
+	ocamlfind ocamlc -o _build/tokenizer_test -I +ounit -linkpkg -package ounit2,str types.ml debug_printers.ml tokenizer.ml reader.ml tokenizer_test.ml
 	./_build/tokenizer_test
 
 clean:
