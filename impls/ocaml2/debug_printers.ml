@@ -6,6 +6,8 @@ let prepend_to_string prepend string = prepend ^ string
 let string_of_token = function
   | LParen -> "LParen "
   | RParen -> "RParen"
+  | LCurly -> "LCurly "
+  | RCurly -> "RCurly"
   | Number s -> "Number (" ^ s ^ ")"
   | String s -> "String (" ^ s ^ ")"
   | Symbol s -> "Symbol (" ^ s ^ ")"
@@ -26,12 +28,12 @@ let print_tokens tokens =
 let string_of_mal mal =
   let rec build_string_of_mal level = function
     | MalAtom t -> "MalAtom (" ^ string_of_token t ^ ")"
-    | MalList mal_list ->
+    | MalList { list } ->
       let string_of_mal_list (list_string : string) : string =
         (* let tabs = String.make level '\t' in *)
         String.concat "" [ "MalList"; "\n"; "["; list_string; "]" ]
       in
-      mal_list
+      list
       |> List.map (fun a -> build_string_of_mal (level + 1) a)
       |> String.concat "; "
       |> string_of_mal_list

@@ -6,7 +6,16 @@ let rec pr_str mal =
   let string_of_token = function
     | LParen -> "("
     | RParen -> ")"
+    | LCurly -> "{"
+    | RCurly -> "}"
+    | LBracket -> "["
+    | RBracket -> "]"
     | String s -> "\"" ^ s ^ "\""
+    | Symbol "'" -> "quote"
+    | Symbol "`" -> "quasiquote"
+    | Symbol "~" -> "unquote"
+    | Symbol "~@" -> "splice-unquote"
+    | Symbol "@" -> "deref"
     | Number s | Symbol s -> s
     | UNKNOWN -> "UNKNOWN"
     | EOF -> "EOF"
@@ -14,6 +23,11 @@ let rec pr_str mal =
   match mal with
   | MalAtom atom -> string_of_token atom
   | MalList list ->
-    let text = List.map pr_str list |> String.concat " " in
-    "(" ^ text ^ ")"
+    let text = List.map pr_str list.list |> String.concat " " in
+    let wrap text = function
+      | RCurly -> "{" ^ text ^ "}"
+      | RBracket -> "[" ^ text ^ "]"
+      | _ -> "(" ^ text ^ ")"
+    in
+    wrap text list.eol
 ;;

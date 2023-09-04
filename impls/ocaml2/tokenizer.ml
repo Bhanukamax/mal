@@ -6,7 +6,11 @@ let acc_char_to_string chars =
 
 let is_digit c = Char.(c >= '0' && c <= '9')
 let is_alpha c = Char.(c >= 'a' && c <= 'z') || Char.(c >= 'A' && c <= 'Z')
-let is_valid_symbol c = List.mem c [ '{'; '}'; '*'; '+'; '-'; '%'; '~'; '`'; '@'; '\\' ]
+
+let is_valid_symbol c =
+  List.mem c [ ':'; '{'; '}'; '*'; '+'; '-'; '%'; '~'; '`'; '@'; '\\' ]
+;;
+
 let should_escape c = List.mem c [ '#'; '|'; '!'; '~'; '^' ]
 let is_number_prefix c = Char.(c = '-')
 
@@ -35,6 +39,15 @@ let rec tokenize (chars : char list) : token list =
   | ',' :: rest -> tokenize rest
   | '(' :: rest -> LParen :: tokenize rest
   | ')' :: rest -> RParen :: tokenize rest
+  | '{' :: rest -> LCurly :: tokenize rest
+  | '}' :: rest -> RCurly :: tokenize rest
+  | '[' :: rest -> LBracket :: tokenize rest
+  | ']' :: rest -> RBracket :: tokenize rest
+  | '\'' :: rest -> Symbol "\'" :: tokenize rest
+  | '`' :: rest -> Symbol "`" :: tokenize rest
+  | '~'  :: '@' :: rest -> Symbol "~@" :: tokenize rest
+  | '@' :: rest -> Symbol "@" :: tokenize rest
+  | '~' :: rest -> Symbol "~" :: tokenize rest
   (* string *)
   | '"' :: rest ->
     let token, rest = read_string [] rest in
