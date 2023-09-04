@@ -45,7 +45,8 @@ let rec tokenize (chars : char list) : token list =
   | ']' :: rest -> RBracket :: tokenize rest
   | '\'' :: rest -> Symbol "\'" :: tokenize rest
   | '`' :: rest -> Symbol "`" :: tokenize rest
-  | '~'  :: '@' :: rest -> Symbol "~@" :: tokenize rest
+  | '~' :: '@' :: rest -> Symbol "~@" :: tokenize rest
+  | '-' :: '>' :: '>' :: rest -> Symbol "->>" :: tokenize rest
   | '@' :: rest -> Symbol "@" :: tokenize rest
   | '~' :: rest -> Symbol "~" :: tokenize rest
   (* string *)
