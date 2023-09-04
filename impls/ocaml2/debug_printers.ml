@@ -8,6 +8,8 @@ let string_of_token = function
   | RParen -> "RParen"
   | LCurly -> "LCurly "
   | RCurly -> "RCurly"
+  | LBracket -> "LBracket "
+  | RBracket -> "RBracket "
   | Number s -> "Number (" ^ s ^ ")"
   | String s -> "String (" ^ s ^ ")"
   | Symbol s -> "Symbol (" ^ s ^ ")"

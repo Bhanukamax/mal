@@ -14,11 +14,20 @@ let is_valid_symbol c =
 let should_escape c = List.mem c [ '#'; '|'; '!'; '~'; '^' ]
 let is_number_prefix c = Char.(c = '-')
 
-let rec read_string (acc : char list) = function
-  | '\\' :: '\\' :: rest -> read_string ('\\' :: '\\' :: acc) rest
-  | '\\' :: '"' :: rest -> read_string ('"' :: acc) rest
+type string_reader =
+  { acc : char list
+  ; escaped : bool
+  }
+
+let get_string_reader acc escaped = { acc; escaped }
+
+let rec read_string (reader : string_reader) (tokens : char list) =
+  let acc = reader.acc in
+  match tokens with
+  (* | '\\' :: '\\' :: rest -> read_string ('\\' :: '\\' :: acc) rest *)
+  | '\\' :: '"' :: rest -> read_string (get_string_reader ('"' :: acc) true) rest
   | '"' :: rest -> acc, rest
-  | c :: rest -> read_string (c :: acc) rest
+  | c :: rest -> read_string (get_string_reader (c :: acc) false) rest
   | [] -> raise UN_TERMINATED_STRING_EXCEPTION
 ;;
 
@@ -51,7 +60,7 @@ let rec tokenize (chars : char list) : token list =
   | '~' :: rest -> Symbol "~" :: tokenize rest
   (* string *)
   | '"' :: rest ->
-    let token, rest = read_string [] rest in
+    let token, rest = read_string (get_string_reader [] false) rest in
     String (acc_char_to_string token) :: tokenize rest
   | sign :: c :: rest when is_number_prefix sign && is_digit c ->
     let num_token, rest = read_number [ c; sign ] rest in
