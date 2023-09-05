@@ -63,6 +63,8 @@ let rec tokenize (chars : char list) : token list =
   | '-' :: '>' :: '>' :: rest -> Symbol "->>" :: tokenize rest
   | '@' :: rest -> Symbol "@" :: tokenize rest
   | '~' :: rest -> Symbol "~" :: tokenize rest
+  | '*' :: rest -> Symbol "*" :: tokenize rest
+  | '/' :: rest -> Symbol "/" :: tokenize rest
   (* string *)
   | '"' :: rest ->
     let token, rest = read_string (get_string_reader "" false) rest in

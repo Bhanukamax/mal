@@ -1,11 +1,18 @@
 OCAMLC = ocamlc
 
-TARGETS = step0_repl step1_read_print
+TARGETS = step0_repl step1_read_print step2_eval
+MODULES = types.ml debug_printers.ml tokenizer.ml reader.ml printer.ml
 
-step0_repl: clean
-	$(OCAMLC) -o step0_repl types.ml debug_printers.ml tokenizer.ml reader.ml printer.ml step0_repl.ml
-step1_read_print: clean
-	$(OCAMLC) -o step1_read_print types.ml debug_printers.ml tokenizer.ml reader.ml printer.ml step1_read_print.ml
+all: $(TARGETS)
+
+$(TARGETS): %: %.ml
+	$(OCAMLC) -o $@ $(MODULES) $<
+
+
+clean:
+	rm -rf $(TARGETS)
+	rm -rf ./*.cmo
+	rm -rf ./*.cmi
 
 build:
 	./build.sh
@@ -20,7 +27,3 @@ test.t:
 	ocamlfind ocamlc -o _build/tokenizer_test -I +ounit -linkpkg -package ounit2,str types.ml debug_printers.ml tokenizer.ml reader.ml tokenizer_test.ml
 	./_build/tokenizer_test
 
-clean:
-	rm -rf $(TARGETS)
-	rm -rf ./*.cmo
-	rm -rf ./*.cmi

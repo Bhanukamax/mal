@@ -17,6 +17,7 @@ type malListType =
 
 type mal =
   | MalAtom of token
+  | MalFn of (mal list -> mal)
   | MalList of
       { list : mal list
       ; eol : token
