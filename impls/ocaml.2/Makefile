@@ -1,6 +1,6 @@
 OCAMLC = ocamlc
 
-TARGETS = step0_repl step1_read_print step2_eval
+TARGETS = step0_repl step1_read_print step2_eval step3_env
 MODULES = types.ml debug_printers.ml tokenizer.ml reader.ml printer.ml
 
 all: $(TARGETS)
