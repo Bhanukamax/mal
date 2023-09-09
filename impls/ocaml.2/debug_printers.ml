@@ -29,6 +29,7 @@ let print_tokens tokens =
 
 let string_of_mal mal =
   let rec build_string_of_mal level = function
+    | MalFn _ -> "MalFn"
     | MalAtom t -> "MalAtom (" ^ string_of_token t ^ ")"
     | MalList { list } ->
       let string_of_mal_list (list_string : string) : string =

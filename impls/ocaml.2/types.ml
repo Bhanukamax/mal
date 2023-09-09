@@ -15,12 +15,17 @@ type malListType =
   | Paren
   | Curly
 
+type listType =
+  | List
+  | HashMap
+
 type mal =
   | MalAtom of token
   | MalFn of (mal list -> mal)
   | MalList of
       { list : mal list
       ; eol : token
+      ; listType : listType
       }
 
 exception UN_TERMINATED_STRING_EXCEPTION

@@ -7,7 +7,8 @@ let add_atom_to_list (list : mal list) (atom : mal) = List.rev (atom :: List.rev
 let rec read_form tokens =
   let add_quote quote rest =
     let form, rest' = read_form rest in
-    MalList { list = [ MalAtom (Symbol quote); form ]; eol = RParen }, rest'
+    ( MalList { list = [ MalAtom (Symbol quote); form ]; eol = RParen; listType = List }
+    , rest' )
   in
   match tokens with
   | [] -> raise (UNEXPECTED_STATE "Unexpected end of input")
@@ -24,7 +25,8 @@ let rec read_form tokens =
 and read_list eol tokens acc =
   match tokens with
   | [] -> raise UN_TERMINATED_STRING_EXCEPTION
-  | t :: rest when t = eol -> MalList { eol = t; list = List.rev acc }, rest
+  | t :: rest when t = eol ->
+    MalList { eol = t; list = List.rev acc; listType = List }, rest
   | _ ->
     let form, remaining_tokens = read_form tokens in
     read_list eol remaining_tokens (form :: acc)

@@ -25,7 +25,8 @@ and eval_ast env ast =
      | None -> raise (ILLEGAL_OPERATION ("undefined symbol " ^ sym))
      | Some fn -> MalFn fn)
   | MalList { list = MalFn op :: operand } -> op operand
-  | MalList { list; eol } -> MalList { list = List.map (eval env) list; eol }
+  | MalList { list; eol } ->
+    MalList { list = List.map (eval env) list; eol; listType = List }
   | MalAtom n -> MalAtom n
   | _ -> MalAtom (Number "0")
 ;;
