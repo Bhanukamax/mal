@@ -16,7 +16,7 @@ let rec pr_str mal =
     | Symbol "~" -> "unquote"
     | Symbol "~@" -> "splice-unquote"
     | Symbol "@" -> "deref"
-    | Number s | Symbol s -> s
+    | Number s | Symbol s | Keyword s -> s
     | UNKNOWN -> "UNKNOWN"
     | EOF -> "EOF"
   in

@@ -8,6 +8,7 @@ type token =
   | Number of string
   | String of string
   | Symbol of string
+  | Keyword of string
   | UNKNOWN
   | EOF
 

@@ -13,6 +13,7 @@ let string_of_token = function
   | Number s -> "Number (" ^ s ^ ")"
   | String s -> "String (" ^ s ^ ")"
   | Symbol s -> "Symbol (" ^ s ^ ")"
+  | Keyword s -> "Keyword (" ^ s ^ ")"
   | UNKNOWN -> "UNKNOWN"
   | EOF -> "EOF"
 ;;

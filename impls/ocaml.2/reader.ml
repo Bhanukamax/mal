@@ -26,7 +26,12 @@ and read_list eol tokens acc =
   match tokens with
   | [] -> raise UN_TERMINATED_STRING_EXCEPTION
   | t :: rest when t = eol ->
-    MalList { eol = t; list = List.rev acc; listType = List }, rest
+    let listType =
+      match eol with
+      | RCurly -> HashMap
+      | _ -> List
+    in
+    MalList { eol = t; list = List.rev acc; listType }, rest
   | _ ->
     let form, remaining_tokens = read_form tokens in
     read_list eol remaining_tokens (form :: acc)
@@ -36,6 +41,7 @@ and read_atom token =
   | Number s -> MalAtom (Number s)
   | String s -> MalAtom (String s)
   | Symbol s -> MalAtom (Symbol s)
+  | Keyword s -> MalAtom (Keyword s)
   | _ -> raise (ILLEGAL_OPERATION "Invalid token")
 ;;
 

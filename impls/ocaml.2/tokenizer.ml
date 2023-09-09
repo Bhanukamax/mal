@@ -1,10 +1,5 @@
 open Types
 
-let acc_char_to_string chars =
-  chars |> List.map Char.escaped |> List.rev |> String.concat ""
-;;
-
-let acc_char_to_string chars = chars
 let is_digit c = Char.(c >= '0' && c <= '9')
 let is_alpha c = Char.(c >= 'a' && c <= 'z') || Char.(c >= 'A' && c <= 'Z')
 
@@ -40,6 +35,12 @@ let rec read_symbol acc = function
   | rest -> acc, rest
 ;;
 
+let rec read_keyword acc = function
+  | c :: rest when is_alpha c || is_digit c || is_valid_symbol c ->
+    read_symbol (acc ^ Char.escaped c) rest
+  | rest -> acc, rest
+;;
+
 let string_of_char_list list = List.map Char.escaped list |> String.concat ""
 
 let rec read_number acc = function
@@ -63,21 +64,25 @@ let rec tokenize (chars : char list) : token list =
   | '-' :: '>' :: '>' :: rest -> Symbol "->>" :: tokenize rest
   | '@' :: rest -> Symbol "@" :: tokenize rest
   | '~' :: rest -> Symbol "~" :: tokenize rest
+  | '*' :: '*' :: rest -> Symbol "**" :: tokenize rest
   | '*' :: rest -> Symbol "*" :: tokenize rest
   | '/' :: rest -> Symbol "/" :: tokenize rest
   (* string *)
+  | ':' :: rest ->
+    let token, rest = read_keyword ":" rest in
+    Keyword token :: tokenize rest
   | '"' :: rest ->
     let token, rest = read_string (get_string_reader "" false) rest in
-    String (acc_char_to_string token) :: tokenize rest
+    String token :: tokenize rest
   | sign :: c :: rest when is_number_prefix sign && is_digit c ->
     let num_token, rest = read_number (string_of_char_list [ sign; c ]) rest in
-    Number (acc_char_to_string num_token) :: tokenize rest
+    Number num_token :: tokenize rest
   | c :: rest when is_digit c ->
     let num_token, rest = read_number (Char.escaped c) rest in
-    Number (acc_char_to_string num_token) :: tokenize rest
+    Number num_token :: tokenize rest
   | c :: rest when is_alpha c || is_valid_symbol c ->
     let token, rest = read_symbol (Char.escaped c) rest in
-    Symbol (token |> acc_char_to_string) :: tokenize rest
+    Symbol token :: tokenize rest
   | _ -> []
 ;;
 
