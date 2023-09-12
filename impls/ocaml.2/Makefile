@@ -1,16 +1,22 @@
 OCAMLC = ocamlc
 
-TARGETS = step0_repl step1_read_print step2_eval step3_env
+TARGETS = step0_repl step1_read_print step2_eval
+TARGETS_STEP3 = step3_env
+ALL_TARGETS = $(TARGETS) $(TARGETS_STEP3)
 MODULES = types.ml debug_printers.ml tokenizer.ml reader.ml printer.ml
+MODULES_STEP3 = $(MODULES) env.ml
 
 all: $(TARGETS)
 
 $(TARGETS): %: %.ml
 	$(OCAMLC) -o $@ $(MODULES) $<
 
+$(TARGETS_STEP3): %: %.ml
+	$(OCAMLC) -o $@ $(MODULES_STEP3) $<
+
 
 clean:
-	rm -rf $(TARGETS)
+	rm -rf $(ALL_TARGETS)
 	rm -rf ./*.cmo
 	rm -rf ./*.cmi
 

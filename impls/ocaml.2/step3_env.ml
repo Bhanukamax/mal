@@ -1,11 +1,10 @@
 open Reader
 open Types
 open Printer
+open Env
 
 let read x = Reader.read_str x
 let print x = print_endline (Printer.pr_str x)
-
-module Env = Map.Make (String)
 
 let rec eval env ast =
   match ast with
@@ -21,9 +20,10 @@ and eval_ast env ast =
   match ast with
   | MalAtom (Symbol sym) ->
     let found_opt = Env.find_opt sym env in
-    (match found_opt with
-     | None -> raise (ILLEGAL_OPERATION ("undefined symbol " ^ sym))
-     | Some fn -> MalFn fn)
+    found_opt
+    (* (match found_opt with *)
+    (*  | None -> raise (ILLEGAL_OPERATION ("undefined symbol " ^ sym)) *)
+    (*  | Some fn -> MalFn fn) *)
   | MalList { list = MalFn op :: operand } -> op operand
   | MalList { list; eol } ->
     MalList { list = List.map (eval env) list; eol; listType = List }
@@ -39,7 +39,7 @@ let num_fun op = function
 
 let num_fold op acc el = num_fun op [ acc; el ]
 
-let num_fold_new symbol =
+let num_fold_new symbol env =
   let operator =
     match symbol with
     | "+" -> ( + )
@@ -48,18 +48,16 @@ let num_fold_new symbol =
     | "/" -> ( / )
     | _ -> raise (ILLEGAL_OPERATION "unknown operator")
   in
-  Env.add symbol (fun a -> num_fun operator (List.rev a))
+  Env.set symbol (MalFn (fun a -> num_fun operator (List.rev a))) env
 ;;
 
 let rec rep () =
   print_string "user> ";
-  let env =
-    Env.empty
-    |> num_fold_new "+"
-    |> num_fold_new "-"
-    |> num_fold_new "/"
-    |> num_fold_new "*"
-  in
+  let env = Env.new_env in
+  let env = num_fold_new "+" env in
+  let env = num_fold_new "-" env in
+  let env = num_fold_new "/" env in
+  let env = num_fold_new "*" env in
   let input = read_line () in
   let _ =
     try input |> read |> eval env |> print with
