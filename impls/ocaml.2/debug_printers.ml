@@ -32,10 +32,12 @@ let string_of_mal mal =
   let rec build_string_of_mal level = function
     | MalFn _ -> "MalFn"
     | MalAtom t -> "MalAtom (" ^ string_of_token t ^ ")"
-    | MalList { list } ->
+    | MalList { list; eol } ->
       let string_of_mal_list (list_string : string) : string =
         (* let tabs = String.make level '\t' in *)
-        String.concat "" [ "MalList"; "\n"; "["; list_string; "]" ]
+        String.concat
+          ""
+          [ "MalList"; "\n"; "["; list_string; "] eol: "; string_of_token eol ]
       in
       list
       |> List.map (fun a -> build_string_of_mal (level + 1) a)
