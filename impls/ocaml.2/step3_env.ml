@@ -6,29 +6,44 @@ open Env
 let read x = Reader.read_str x
 let print x = print_endline (Printer.pr_str x)
 
-let rec eval env ast =
+let rec eval env ast : mal * Env.env =
   match ast with
-  | MalList { list = [] } -> ast
+  | MalList { list = [] } -> ast, env
   | MalList _ ->
-    let result = eval_ast env ast in
-    (match result with
-     | MalList list -> eval_ast env (MalList list)
-     | _ -> result)
+    let result, env = eval_ast env ast in
+    let ast, env =
+      match result with
+      | MalList list -> eval_ast env (MalList list)
+      | _ -> result, env
+    in
+    ast, env
   | _ -> eval_ast env ast
 
-and eval_ast env ast =
+and eval_ast env ast : mal * Env.env =
   match ast with
   | MalAtom (Symbol sym) ->
     let found_opt = Env.get sym env in
-    found_opt
-    (* (match found_opt with *)
-    (*  | None -> raise (ILLEGAL_OPERATION ("undefined symbol " ^ sym)) *)
-    (*  | Some fn -> MalFn fn) *)
-  | MalList { list = MalFn op :: operand } -> op operand
+    found_opt, env
+  | MalList { list = MalFn op :: operand } -> op operand, env
   | MalList { list; eol } ->
-    MalList { list = List.map (eval env) list; eol; listType = List }
-  | MalAtom n -> MalAtom n
-  | _ -> MalAtom (Number "0")
+    let eval = eval env in
+    let list =
+      List.map
+        (fun a ->
+          let ast, env = eval a in
+          ast, env)
+        list
+    in
+    let list =
+      List.map
+        (fun a ->
+          let ast, env = a in
+          ast)
+        list
+    in
+    MalList { list; eol; listType = List }, env
+  | MalAtom n -> MalAtom n, env
+  | _ -> MalAtom (Number "0"), env
 ;;
 
 let num_fun op = function
@@ -60,7 +75,14 @@ let rec rep () =
   let env = num_fold_new "*" env in
   let input = read_line () in
   let _ =
-    try input |> read |> eval env |> print with
+    try
+      input
+      |> read
+      |> (fun a ->
+           let ast, _ = eval env a in
+           ast)
+      |> print
+    with
     | UN_TERMINATED_STRING_EXCEPTION -> print_endline "end of input"
     | ILLEGAL_OPERATION e -> print_endline @@ e ^ " end of input"
     | UNEXPECTED_STATE e -> print_endline @@ e ^ " end of input"
