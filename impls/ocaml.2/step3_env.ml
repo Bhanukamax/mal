@@ -19,7 +19,7 @@ let rec eval env ast =
 and eval_ast env ast =
   match ast with
   | MalAtom (Symbol sym) ->
-    let found_opt = Env.find_opt sym env in
+    let found_opt = Env.get sym env in
     found_opt
     (* (match found_opt with *)
     (*  | None -> raise (ILLEGAL_OPERATION ("undefined symbol " ^ sym)) *)
@@ -62,8 +62,8 @@ let rec rep () =
   let _ =
     try input |> read |> eval env |> print with
     | UN_TERMINATED_STRING_EXCEPTION -> print_endline "end of input"
-    | ILLEGAL_OPERATION _ -> print_endline "end of input"
-    | UNEXPECTED_STATE _ -> print_endline "end of input"
+    | ILLEGAL_OPERATION e -> print_endline @@ e ^ " end of input"
+    | UNEXPECTED_STATE e -> print_endline @@ e ^ " end of input"
   in
   rep ()
 ;;
