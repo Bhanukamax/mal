@@ -4,7 +4,7 @@ let is_digit c = Char.(c >= '0' && c <= '9')
 let is_alpha c = Char.(c >= 'a' && c <= 'z') || Char.(c >= 'A' && c <= 'Z')
 
 let is_valid_symbol c =
-  List.mem c [ ':'; '{'; '}'; '*'; '+'; '-'; '%'; '~'; '`'; '@'; '\\' ]
+  List.mem c [ '!'; ':'; '{'; '}'; '*'; '+'; '-'; '%'; '~'; '`'; '@'; '\\' ]
 ;;
 
 let should_escape c = List.mem c [ '#'; '|'; '!'; '~'; '^' ]

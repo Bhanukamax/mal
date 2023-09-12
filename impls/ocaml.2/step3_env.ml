@@ -9,6 +9,9 @@ let print x = print_endline (Printer.pr_str x)
 let rec eval env ast : mal * Env.env =
   match ast with
   | MalList { list = [] } -> ast, env
+  | MalList { list = [ MalAtom (Symbol "def!"); MalAtom (Symbol name); value ] } ->
+    let env = Env.set name value env in
+    ast, env
   | MalList _ ->
     let result, env = eval_ast env ast in
     let ast, env =

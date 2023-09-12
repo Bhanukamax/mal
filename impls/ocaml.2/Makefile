@@ -23,6 +23,11 @@ clean:
 build:
 	./build.sh
 
+test_tokenize:
+	rm -rf ./_build/test_tokenize
+	ocamlfind ocamlc -o _build/test_tokenize -I +ounit -linkpkg -package ounit2,str types.ml debug_printers.ml tokenizer.ml reader.ml test_tokenize.ml
+	./_build/test_tokenize
+
 test:
 	rm -rf ./_build/test_reader
 	ocamlfind ocamlc -o _build/reader_test -I +ounit -linkpkg -package ounit2,str types.ml debug_printers.ml tokenizer.ml reader.ml reader_test.ml
