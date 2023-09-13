@@ -3,50 +3,42 @@ open Types
 open Printer
 open Env
 
+let debug_env env sym is_debug_env =
+  if is_debug_env == true then print_endline ("looking for: " ^ sym);
+  print_endline (string_of_env env)
+;;
+
 let read x = Reader.read_str x
 let print x = print_endline (Printer.pr_str x)
 
-let rec eval env ast : mal * Env.env =
+let rec eval env ast : mal =
   match ast with
-  | MalList { list = [] } -> ast, env
+  | MalList { list = [] } -> ast
   | MalList { list = [ MalAtom (Symbol "def!"); MalAtom (Symbol name); value ] } ->
-    let env = Env.set name value env in
-    ast, env
+    let value = eval_ast env value in
+    let _ = Env.set name value env in
+    ast
   | MalList _ ->
-    let result, env = eval_ast env ast in
-    let ast, env =
+    let result = eval_ast env ast in
+    let ast =
       match result with
       | MalList list -> eval_ast env (MalList list)
-      | _ -> result, env
+      | _ -> result
     in
-    ast, env
+    ast
   | _ -> eval_ast env ast
 
-and eval_ast env ast : mal * Env.env =
+and eval_ast env ast : mal =
   match ast with
   | MalAtom (Symbol sym) ->
+    (* debug_env env sym false; *)
     let found_opt = Env.get sym env in
-    found_opt, env
-  | MalList { list = MalFn op :: operand } -> op operand, env
+    found_opt
+  | MalList { list = MalFn op :: operand } -> op operand
   | MalList { list; eol } ->
-    let eval = eval env in
-    let list =
-      List.map
-        (fun a ->
-          let ast, env = eval a in
-          ast, env)
-        list
-    in
-    let list =
-      List.map
-        (fun a ->
-          let ast, env = a in
-          ast)
-        list
-    in
-    MalList { list; eol; listType = List }, env
-  | MalAtom n -> MalAtom n, env
-  | _ -> MalAtom (Number "0"), env
+    MalList { list = List.map (eval env) list; eol; listType = List }
+  | MalAtom n -> MalAtom n
+  | _ -> MalAtom (Number "0")
 ;;
 
 let num_fun op = function
@@ -78,14 +70,7 @@ let rec rep () =
   let env = num_fold_new "*" env in
   let input = read_line () in
   let _ =
-    try
-      input
-      |> read
-      |> (fun a ->
-           let ast, _ = eval env a in
-           ast)
-      |> print
-    with
+    try input |> read |> eval env |> print with
     | UN_TERMINATED_STRING_EXCEPTION -> print_endline "end of input"
     | ILLEGAL_OPERATION e -> print_endline @@ e ^ " end of input"
     | UNEXPECTED_STATE e -> print_endline @@ e ^ " end of input"
