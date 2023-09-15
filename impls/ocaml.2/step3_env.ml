@@ -3,13 +3,13 @@ open Types
 open Printer
 open Env
 
-let debug_env env sym is_debug_env =
-  if is_debug_env == true then print_endline ("looking for: " ^ sym);
-  print_endline (string_of_env env)
-;;
-
 let read x = Reader.read_str x
 let print x = print_endline (Printer.pr_str x)
+
+let debug_env value name env =
+  Printf.printf "Defining %s as %s" name (Debug_printers.string_of_mal value);
+  print_endline @@ "Env" ^ string_of_env env
+;;
 
 let rec eval env ast : mal =
   match ast with
@@ -17,8 +17,7 @@ let rec eval env ast : mal =
   | MalList { list = [ MalAtom (Symbol "def!"); MalAtom (Symbol name); value ] } ->
     let value = eval env value in
     let _ = Env.set name value env in
-    (* Printf.printf "Defining %s as %s" name (Debug_printers.string_of_mal value); *)
-    (* print_endline @@ "Env" ^ string_of_env env; *)
+    (* debug_env value name env; *)
     value
   | MalList { list = [ MalAtom (Symbol "let*"); MalList binding; value ] } ->
     let let_env = get_let_binding_env binding.list env in
@@ -72,7 +71,7 @@ let num_fold_new symbol env =
     | "-" -> ( - )
     | "*" -> ( * )
     | "/" -> ( / )
-    | _ -> raise (ILLEGAL_OPERATION "unknown operator")
+    | _ -> raise (UNDEFINED_SYMBOL "? not found")
   in
   Env.set symbol (MalFn (fun a -> num_fun operator (List.rev a))) env
 ;;
@@ -91,6 +90,7 @@ let rec rep () =
     | UN_TERMINATED_STRING_EXCEPTION -> print_endline "end of input"
     | ILLEGAL_OPERATION e -> print_endline @@ e ^ " end of input"
     | UNEXPECTED_STATE e -> print_endline @@ e ^ " end of input"
+    | UNDEFINED_SYMBOL e -> print_endline e
   in
   rep ()
 ;;

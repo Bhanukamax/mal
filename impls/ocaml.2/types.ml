@@ -36,3 +36,4 @@ end
 exception UN_TERMINATED_STRING_EXCEPTION
 exception ILLEGAL_OPERATION of string
 exception UNEXPECTED_STATE of string
+exception UNDEFINED_SYMBOL of string

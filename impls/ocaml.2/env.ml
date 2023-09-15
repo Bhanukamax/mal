@@ -34,7 +34,7 @@ module Env = struct
     let found = find_opt sym env in
     match found with
     | Some f -> f
-    | _ -> raise (ILLEGAL_OPERATION "undefined symbol")
+    | _ -> raise (UNDEFINED_SYMBOL (sym ^ " not found."))
   ;;
 end
 
