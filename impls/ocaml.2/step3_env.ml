@@ -15,9 +15,9 @@ let rec eval env ast : mal =
   match ast with
   | MalList { list = [] } -> ast
   | MalList { list = [ MalAtom (Symbol "def!"); MalAtom (Symbol name); value ] } ->
-    let value = eval_ast env value in
+    let value = eval env value in
     let _ = Env.set name value env in
-    ast
+    value
   | MalList _ ->
     let result = eval_ast env ast in
     let ast =
