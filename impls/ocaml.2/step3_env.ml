@@ -18,6 +18,9 @@ let rec eval env ast : mal =
     let value = eval env value in
     let _ = Env.set name value env in
     value
+  | MalList { list = [ MalAtom (Symbol "let*"); MalList bindingList; value ] } ->
+    let value = eval env value in
+    value
   | MalList _ ->
     let result = eval_ast env ast in
     let ast =
