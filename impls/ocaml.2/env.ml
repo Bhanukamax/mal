@@ -9,7 +9,13 @@ module Env = struct
     ; outer : env option
     }
 
-  let new_env : env = { data = ref EnvMap.empty; outer = None }
+  let repl_env : env = { data = ref EnvMap.empty; outer = None }
+
+  let new_env outer_env : env =
+    match outer_env with
+    | Some _ -> { data = ref EnvMap.empty; outer = outer_env }
+    | None -> { data = ref EnvMap.empty; outer = None }
+  ;;
 
   let set sym mal env =
     let _ = env.data := EnvMap.add sym mal !(env.data) in
@@ -43,6 +49,7 @@ let string_of_env_map env_data =
 ;;
 
 let rec string_of_env (env : Env.env) =
+  print_endline "$$$$$$$ printing env";
   match env with
   | { data; outer = None } -> string_of_env_map !data ^ "outer: None"
   | { data; outer = Some outer_env } ->

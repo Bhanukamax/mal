@@ -17,9 +17,12 @@ let rec eval env ast : mal =
   | MalList { list = [ MalAtom (Symbol "def!"); MalAtom (Symbol name); value ] } ->
     let value = eval env value in
     let _ = Env.set name value env in
+    Printf.printf "Defining %s as %s" name (Debug_printers.string_of_mal value);
+    print_endline @@ "Env" ^ string_of_env env;
     value
-  | MalList { list = [ MalAtom (Symbol "let*"); MalList bindingList; value ] } ->
-    let value = eval env value in
+  | MalList { list = [ MalAtom (Symbol "let*"); MalList binding; value ] } ->
+    let let_env = get_let_binding_env binding.list env in
+    let value = eval let_env value in
     value
   | MalList _ ->
     let result = eval_ast env ast in
@@ -34,7 +37,6 @@ let rec eval env ast : mal =
 and eval_ast env ast : mal =
   match ast with
   | MalAtom (Symbol sym) ->
-    (* debug_env env sym false; *)
     let found_opt = Env.get sym env in
     found_opt
   | MalList { list = MalFn op :: operand } -> op operand
@@ -42,6 +44,17 @@ and eval_ast env ast : mal =
     MalList { list = List.map (eval env) list; eol; listType = List }
   | MalAtom n -> MalAtom n
   | _ -> MalAtom (Number "0")
+
+and get_let_binding_env (bindings : mal list) outer =
+  let rec eval_bindings_in_new_env bindings env =
+    match bindings with
+    | [] -> env
+    | MalAtom (Symbol name) :: value :: tail ->
+      let _ = Env.set name (eval env value) env in
+      eval_bindings_in_new_env tail env
+    | _ -> env
+  in
+  Env.new_env (Some outer) |> eval_bindings_in_new_env bindings
 ;;
 
 let num_fun op = function
@@ -66,11 +79,12 @@ let num_fold_new symbol env =
 
 let rec rep () =
   print_string "user> ";
-  let env = Env.new_env in
+  let env = Env.repl_env in
   let env = num_fold_new "+" env in
   let env = num_fold_new "-" env in
   let env = num_fold_new "/" env in
   let env = num_fold_new "*" env in
+  (* print_endline (string_of_env env); *)
   let input = read_line () in
   let _ =
     try input |> read |> eval env |> print with
