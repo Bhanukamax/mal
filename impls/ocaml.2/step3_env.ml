@@ -17,8 +17,8 @@ let rec eval env ast : mal =
   | MalList { list = [ MalAtom (Symbol "def!"); MalAtom (Symbol name); value ] } ->
     let value = eval env value in
     let _ = Env.set name value env in
-    Printf.printf "Defining %s as %s" name (Debug_printers.string_of_mal value);
-    print_endline @@ "Env" ^ string_of_env env;
+    (* Printf.printf "Defining %s as %s" name (Debug_printers.string_of_mal value); *)
+    (* print_endline @@ "Env" ^ string_of_env env; *)
     value
   | MalList { list = [ MalAtom (Symbol "let*"); MalList binding; value ] } ->
     let let_env = get_let_binding_env binding.list env in
