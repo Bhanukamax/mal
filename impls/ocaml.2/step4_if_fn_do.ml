@@ -15,6 +15,8 @@ let debug_env value name env =
 let rec eval env ast : mal =
   match ast with
   | MalList { list = [] } -> ast
+  | MalList { list = MalAtom (Symbol "do") :: tail } ->
+    eval_ast_list_and_get_last env tail
   | MalList { list = [ MalAtom (Symbol "def!"); MalAtom (Symbol name); value ] } ->
     let value = eval env value in
     let _ = Env.set name value env in
@@ -33,6 +35,14 @@ let rec eval env ast : mal =
     in
     ast
   | _ -> eval_ast env ast
+
+and eval_ast_list_and_get_last env mal_list =
+  match mal_list with
+  | [ last ] -> eval_ast env last
+  | current :: tail ->
+    let _ = eval env current in
+    eval_ast_list_and_get_last env tail
+  | _ -> raise (ILLEGAL_OPERATION "error in do statement")
 
 and eval_ast env ast : mal =
   match ast with
@@ -54,7 +64,7 @@ and get_let_binding_env (bindings : mal list) outer =
       eval_bindings_in_new_env tail env
     | _ -> env
   in
-  Env.new_env (Some outer) |> eval_bindings_in_new_env bindings
+  Env.new_env (Some outer) [] [] |> eval_bindings_in_new_env bindings
 ;;
 
 let num_fun op = function
@@ -95,5 +105,5 @@ let rec rep env =
   rep env
 ;;
 
-let env = Env.new_env None in
+let env = Env.new_env None [] [] in
 rep env

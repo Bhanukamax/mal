@@ -54,7 +54,7 @@ and get_let_binding_env (bindings : mal list) outer =
       eval_bindings_in_new_env tail env
     | _ -> env
   in
-  Env.new_env (Some outer) |> eval_bindings_in_new_env bindings
+  Env.new_env (Some outer) [] [] |> eval_bindings_in_new_env bindings
 ;;
 
 let num_fun op = function
@@ -77,8 +77,9 @@ let num_fold_new symbol env =
   Env.set symbol (MalFn (fun a -> num_fun operator (List.rev a))) env
 ;;
 
-let rec rep env =
+let rec rep () =
   print_string "user> ";
+  let env = Env.repl_env in
   let env = num_fold_new "+" env in
   let env = num_fold_new "-" env in
   let env = num_fold_new "/" env in
@@ -92,8 +93,7 @@ let rec rep env =
     | UNEXPECTED_STATE e -> print_endline @@ e ^ " end of input"
     | UNDEFINED_SYMBOL e -> print_endline e
   in
-  rep env
+  rep ()
 ;;
 
-let env = Env.new_env None in
-rep env
+rep ()
