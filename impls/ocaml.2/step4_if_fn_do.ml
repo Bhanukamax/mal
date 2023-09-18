@@ -77,9 +77,8 @@ let num_fold_new symbol env =
   Env.set symbol (MalFn (fun a -> num_fun operator (List.rev a))) env
 ;;
 
-let rec rep () =
+let rec rep env =
   print_string "user> ";
-  let env = Env.repl_env in
   let env = num_fold_new "+" env in
   let env = num_fold_new "-" env in
   let env = num_fold_new "/" env in
@@ -93,7 +92,8 @@ let rec rep () =
     | UNEXPECTED_STATE e -> print_endline @@ e ^ " end of input"
     | UNDEFINED_SYMBOL e -> print_endline e
   in
-  rep ()
+  rep env
 ;;
 
-let _ = rep ()
+let env = Env.new_env None in
+rep env

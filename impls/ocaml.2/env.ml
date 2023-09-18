@@ -2,8 +2,6 @@ open Types
 open Debug_printers
 
 module Env = struct
-  let repl_env : env = { data = ref EnvMap.empty; outer = None }
-
   let new_env outer_env : env =
     match outer_env with
     | Some _ -> { data = ref EnvMap.empty; outer = outer_env }
