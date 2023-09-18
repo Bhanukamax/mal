@@ -33,6 +33,13 @@ module Mal = struct
   type t = mal
 end
 
+module EnvMap = Map.Make (String)
+
+type env =
+  { data : mal EnvMap.t ref
+  ; outer : env option
+  }
+
 exception UN_TERMINATED_STRING_EXCEPTION
 exception ILLEGAL_OPERATION of string
 exception UNEXPECTED_STATE of string

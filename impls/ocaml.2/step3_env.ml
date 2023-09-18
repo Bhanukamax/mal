@@ -2,6 +2,7 @@ open Reader
 open Types
 open Printer
 open Env
+open Debug_printers
 
 let read x = Reader.read_str x
 let print x = print_endline (Printer.pr_str x)
