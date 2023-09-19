@@ -16,6 +16,9 @@ let string_of_token = function
   | Keyword s -> "Keyword (\"" ^ s ^ "\")"
   | UNKNOWN -> "UNKNOWN"
   | EOF -> "EOF"
+  | True -> "true"
+  | False -> "false"
+  | Nil -> "nil"
 ;;
 
 let string_of_token_list tokens =
@@ -52,7 +55,6 @@ let string_of_mal mal =
 let print_mal (mal : mal) =
   mal |> string_of_mal |> append_to_string "<<<<< \n\n" |> print_endline
 ;;
-
 
 let string_of_env_map env_data =
   Types.EnvMap.fold

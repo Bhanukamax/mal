@@ -42,6 +42,9 @@ and read_atom token =
   | String s -> MalAtom (String s)
   | Symbol s -> MalAtom (Symbol s)
   | Keyword s -> MalAtom (Keyword s)
+  | True  -> MalAtom (True)
+  | False  -> MalAtom (False)
+  | Nil  -> MalAtom (Nil)
   | _ -> raise (ILLEGAL_OPERATION "Invalid token")
 ;;
 

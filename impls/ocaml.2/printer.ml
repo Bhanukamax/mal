@@ -19,6 +19,9 @@ let rec pr_str mal =
     | Number s | Symbol s | Keyword s -> s
     | UNKNOWN -> "UNKNOWN"
     | EOF -> "EOF"
+    | True -> "true"
+    | False -> "false"
+    | Nil -> "nil"
   in
   match mal with
   | MalFn _ -> raise (UNEXPECTED_STATE "unable to print function")

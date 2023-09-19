@@ -67,6 +67,14 @@ let rec tokenize (chars : char list) : token list =
   | '*' :: '*' :: rest -> Symbol "**" :: tokenize rest
   | '*' :: rest -> Symbol "*" :: tokenize rest
   | '/' :: rest -> Symbol "/" :: tokenize rest
+  (* TODO:
+      - handle when there's more text after true, false, nil
+        e.g: nilfoo, true22
+        ^ these currently capture as nil, true, etc
+    *)
+  | 't' :: 'r' :: 'u' :: 'e' :: rest -> True :: tokenize rest
+  | 'f' :: 'a' :: 'l' :: 's' :: 'e' :: rest -> False :: tokenize rest
+  | 'n' :: 'i' :: 'l' :: rest -> Nil :: tokenize rest
   (* string *)
   | ':' :: rest ->
     let token, rest = read_keyword ":" rest in

@@ -11,6 +11,9 @@ type token =
   | Keyword of string
   | UNKNOWN
   | EOF
+  | True
+  | False
+  | Nil
 
 type malListType =
   | Paren
