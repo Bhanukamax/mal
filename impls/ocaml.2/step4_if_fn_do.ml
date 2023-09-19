@@ -38,7 +38,7 @@ let rec eval env ast : mal =
 
 and eval_ast_list_and_get_last env mal_list =
   match mal_list with
-  | [ last ] -> eval_ast env last
+  | [ last ] -> eval env last
   | current :: tail ->
     let _ = eval env current in
     eval_ast_list_and_get_last env tail
@@ -67,15 +67,12 @@ and get_let_binding_env (bindings : mal list) outer =
   Env.new_env (Some outer) [] [] |> eval_bindings_in_new_env bindings
 ;;
 
-let num_fun op = function
-  | [ MalAtom (Number a); MalAtom (Number b) ] ->
-    MalAtom (Number (string_of_int (op (int_of_string b) (int_of_string a))))
-  | _ -> MalAtom (Number "1")
-;;
-
-let num_fold op acc el = num_fun op [ acc; el ]
-
-let num_fold_new symbol env =
+let num_func symbol env =
+  let num_fun op = function
+    | [ MalAtom (Number a); MalAtom (Number b) ] ->
+      MalAtom (Number (string_of_int (op (int_of_string b) (int_of_string a))))
+    | _ -> MalAtom (Number "1")
+  in
   let operator =
     match symbol with
     | "+" -> ( + )
@@ -89,10 +86,10 @@ let num_fold_new symbol env =
 
 let rec rep env =
   print_string "user> ";
-  let env = num_fold_new "+" env in
-  let env = num_fold_new "-" env in
-  let env = num_fold_new "/" env in
-  let env = num_fold_new "*" env in
+  let env = num_func "+" env in
+  let env = num_func "-" env in
+  let env = num_func "/" env in
+  let env = num_func "*" env in
   (* print_endline (string_of_env env); *)
   let input = read_line () in
   let _ =
