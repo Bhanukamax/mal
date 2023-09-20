@@ -7,19 +7,17 @@ module Env = struct
     env
   ;;
 
-  (* TODO:
-    bind the binds to env
-    *)
-  let rec set_env_bind_list binds exprs env = env
+  let rec set_env_bind_list binds exprs env =
+    let mapped_env = List.mapi (fun i b -> set b (List.nth exprs i) env) binds in
+    match mapped_env |> List.rev |> fun list -> List.nth_opt list 0 with
+    | Some env -> env
+    | None -> env
+  ;;
+
   let repl_env = { data = ref EnvMap.empty; outer = None }
 
   let new_env outer_env binds exprs : env =
-    match outer_env with
-    | Some _ -> { data = ref EnvMap.empty; outer = outer_env }
-    | None ->
-      { data = ref EnvMap.empty; outer = None }
-      (* ************** just to break line ***********  *)
-      |> set_env_bind_list binds exprs
+    { data = ref EnvMap.empty; outer = outer_env } |> set_env_bind_list binds exprs
   ;;
 
   let rec find_opt sym env =

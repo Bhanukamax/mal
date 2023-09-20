@@ -36,10 +36,14 @@ let rec eval env ast : mal =
     mal
     (* handle closures *)
   | MalList { list = [ MalAtom (Symbol "fn*"); MalList params; body ] } ->
-    print_endline "closure closure";
+    let get_mal_symbol_string = function
+      | MalAtom (Symbol s) -> s
+      | _ -> raise (UNEXPECTED_STATE "fn* parameter list should only contain symbols")
+    in
+    let to_string list = List.map (fun mal -> get_mal_symbol_string mal) list in
     MalFn
       (fun args ->
-        let env = Env.new_env (Some env) params.list args in
+        let env = Env.new_env (Some env) (to_string params.list) args in
         (* print_endline (string_of_env env); *)
         eval env body)
   | MalList _ ->
