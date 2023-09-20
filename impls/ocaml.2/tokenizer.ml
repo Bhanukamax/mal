@@ -4,7 +4,7 @@ let is_digit c = Char.(c >= '0' && c <= '9')
 let is_alpha c = Char.(c >= 'a' && c <= 'z') || Char.(c >= 'A' && c <= 'Z')
 
 let is_valid_symbol c =
-  List.mem c [ '!'; ':'; '{'; '}'; '*'; '+'; '-'; '%'; '~'; '`'; '@'; '\\' ]
+  List.mem c [ '!'; ':'; '{'; '}'; '*'; '+'; '-'; '%'; '~'; '`'; '@'; '\\'; '?' ]
 ;;
 
 let should_escape c = List.mem c [ '#'; '|'; '!'; '~'; '^' ]
@@ -62,6 +62,11 @@ let rec tokenize (chars : char list) : token list =
   | '`' :: rest -> Symbol "`" :: tokenize rest
   | '~' :: '@' :: rest -> Symbol "~@" :: tokenize rest
   | '-' :: '>' :: '>' :: rest -> Symbol "->>" :: tokenize rest
+  | '=' :: ' ' :: rest -> tokenize_symbol "=" rest
+  | '>' :: ' ' :: rest -> tokenize_symbol ">" rest
+  | '<' :: ' ' :: rest -> tokenize_symbol "<" rest
+  | '<' :: '=' :: ' ' :: rest -> tokenize_symbol "<=" rest
+  | '>' :: '=' :: ' ' :: rest -> tokenize_symbol ">=" rest
   | '@' :: rest -> Symbol "@" :: tokenize rest
   | '~' :: rest -> Symbol "~" :: tokenize rest
   | '*' :: '*' :: rest -> Symbol "**" :: tokenize rest
@@ -92,6 +97,7 @@ let rec tokenize (chars : char list) : token list =
     let token, rest = read_symbol (Char.escaped c) rest in
     Symbol token :: tokenize rest
   | _ -> []
-;;
+
+and tokenize_symbol symbol rest = Symbol symbol :: tokenize (' ' :: rest)
 
 let tokenize str = str |> String.to_seq |> List.of_seq |> tokenize
