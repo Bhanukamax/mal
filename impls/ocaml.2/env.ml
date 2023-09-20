@@ -7,6 +7,9 @@ module Env = struct
     env
   ;;
 
+  (* TODO:
+    bind the binds to env
+    *)
   let rec set_env_bind_list binds exprs env = env
   let repl_env = { data = ref EnvMap.empty; outer = None }
 

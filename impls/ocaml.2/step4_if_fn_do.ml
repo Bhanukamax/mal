@@ -34,6 +34,14 @@ let rec eval env ast : mal =
       | _ -> eval env true_expr
     in
     mal
+    (* handle closures *)
+  | MalList { list = [ MalAtom (Symbol "fn*"); MalList params; body ] } ->
+    print_endline "closure closure";
+    MalFn
+      (fun args ->
+        let env = Env.new_env (Some env) params.list args in
+        (* print_endline (string_of_env env); *)
+        eval env body)
   | MalList _ ->
     let result = eval_ast env ast in
     let ast =

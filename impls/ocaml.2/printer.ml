@@ -24,7 +24,7 @@ let rec pr_str mal =
     | Nil -> "nil"
   in
   match mal with
-  | MalFn _ -> raise (UNEXPECTED_STATE "unable to print function")
+  | MalFn _ -> "#<function>"
   | MalAtom atom -> string_of_token atom
   | MalList list ->
     let text = List.map pr_str list.list |> String.concat " " in
