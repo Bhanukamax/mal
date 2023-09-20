@@ -3,6 +3,7 @@ open Types
 open Printer
 open Env
 open Debug_printers
+open Core
 
 let read x = Reader.read_str x
 let print x = print_endline (Printer.pr_str x)
@@ -121,17 +122,6 @@ let rec rep env =
     | UNDEFINED_SYMBOL e -> print_endline e
   in
   rep env
-
-and setup_ns env =
-  Env.set
-    "="
-    (MalFn
-       (fun a ->
-         match List.nth_opt a 0, List.nth_opt a 1 with
-         | Some (MalAtom (Number x)), Some (MalAtom (Number y)) ->
-           if int_of_string x == int_of_string y then MalAtom True else MalAtom False
-         | _ -> MalAtom False))
-    env
 ;;
 
 let env = Env.new_env None [] [] in
