@@ -110,6 +110,7 @@ let rec rep env =
   let env = num_func "-" env in
   let env = num_func "/" env in
   let env = num_func "*" env in
+  let _ = setup_ns env in
   (* print_endline (string_of_env env); *)
   let input = read_line () in
   let _ =
@@ -120,6 +121,17 @@ let rec rep env =
     | UNDEFINED_SYMBOL e -> print_endline e
   in
   rep env
+
+and setup_ns env =
+  Env.set
+    "="
+    (MalFn
+       (fun a ->
+         match List.nth_opt a 0, List.nth_opt a 1 with
+         | Some (MalAtom (Number x)), Some (MalAtom (Number y)) ->
+           if int_of_string x == int_of_string y then MalAtom True else MalAtom False
+         | _ -> MalAtom False))
+    env
 ;;
 
 let env = Env.new_env None [] [] in
