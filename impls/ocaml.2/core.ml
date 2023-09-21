@@ -81,6 +81,11 @@ let is_equal env =
       (fun a ->
         let bool =
           match a with
+          | [ MalAtom Nil; MalAtom Nil ] -> true
+          | [ MalAtom True; MalAtom True ] -> true
+          | [ MalAtom False; MalAtom True ] -> false
+          | [ MalAtom True; MalAtom False ] -> false
+          | [ MalAtom False; MalAtom False ] -> true
           | [ MalAtom a; MalAtom b ] -> compare_atoms (MalAtom a) (MalAtom b)
           | [ MalList a; MalList b ] when List.compare_lengths a.list b.list == 0 ->
             List.for_all2 (fun a b -> compare_atoms a b) a.list b.list
