@@ -76,21 +76,22 @@ let is_empty env =
 
 let is_equal env =
   let compare_atoms a b =
-    let bool =
-      match a, b with
-      | MalAtom (Number a'), MalAtom (Number b') -> int_of_string a' == int_of_string b'
-      | _ -> false
-    in
-    match bool with
-    | true -> MalAtom True
-    | _ -> MalAtom False
+    match a, b with
+    | MalAtom (Number a'), MalAtom (Number b') -> int_of_string a' == int_of_string b'
+    | _ -> false
   in
   let equal =
     MalFn
       (fun a ->
-        match a with
-        | [ MalAtom a; MalAtom b ] -> compare_atoms (MalAtom a) (MalAtom b)
-        | [ MalList a; MalList b ] -> MalAtom False
+        let bool =
+          match a with
+          | [ MalAtom a; MalAtom b ] -> compare_atoms (MalAtom a) (MalAtom b)
+          | [ MalList a; MalList b ] when List.compare_lengths a.list b.list == 0 ->
+            List.for_all2 (fun a b -> compare_atoms a b) a.list b.list
+          | _ -> false
+        in
+        match bool with
+        | true -> MalAtom True
         | _ -> MalAtom False)
   in
   let _ = Env.set "=" equal env in
