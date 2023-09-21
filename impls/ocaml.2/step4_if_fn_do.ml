@@ -27,6 +27,14 @@ let rec eval env ast : mal =
     let let_env = get_let_binding_env binding.list env in
     let value = eval let_env value in
     value
+  | MalList { list = [ MalAtom (Symbol "if"); cond; true_expr ] } ->
+    let eval_cond = eval env cond in
+    let mal =
+      match eval_cond with
+      | MalAtom Nil | MalAtom False -> eval env (MalAtom Nil)
+      | _ -> eval env true_expr
+    in
+    mal
   | MalList { list = [ MalAtom (Symbol "if"); cond; true_expr; false_expr ] } ->
     let eval_cond = eval env cond in
     let mal =
