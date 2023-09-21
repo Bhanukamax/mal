@@ -74,6 +74,29 @@ let is_empty env =
   env
 ;;
 
+let is_equal env =
+  let compare_atoms a b =
+    let bool =
+      match a, b with
+      | MalAtom (Number a'), MalAtom (Number b') -> int_of_string a' == int_of_string b'
+      | _ -> false
+    in
+    match bool with
+    | true -> MalAtom True
+    | _ -> MalAtom False
+  in
+  let equal =
+    MalFn
+      (fun a ->
+        match a with
+        | [ MalAtom a; MalAtom b ] -> compare_atoms (MalAtom a) (MalAtom b)
+        | [ MalList a; MalList b ] -> MalAtom False
+        | _ -> MalAtom False)
+  in
+  let _ = Env.set "=" equal env in
+  env
+;;
+
 let setup_ns env =
   let _ =
     env
@@ -82,11 +105,12 @@ let setup_ns env =
     |> get_builtin ">" ( > )
     |> get_builtin "<" ( < )
     (* TODO: write a custom equal function to compare the elements if it's a list *)
-    |> get_builtin "=" ( == )
+    (* |> get_builtin "=" ( == ) *)
     |> list
     |> is_list
     |> count
     |> is_empty
+    |> is_equal
   in
   ()
 ;;
