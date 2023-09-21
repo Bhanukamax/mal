@@ -45,6 +45,35 @@ let is_list env =
   env
 ;;
 
+let count env =
+  let _ =
+    Env.set
+      "count"
+      (MalFn
+         (fun a ->
+           match a with
+           | [ MalList list ] ->
+             List.length list.list |> fun a -> MalAtom (Number (string_of_int a))
+           | _ -> MalAtom (Number "0")))
+      env
+  in
+  env
+;;
+
+let is_empty env =
+  let _ =
+    Env.set
+      "empty?"
+      (MalFn
+         (fun a ->
+           match a with
+           | [ MalList list ] when List.length list.list == 0 -> MalAtom True
+           | _ -> MalAtom False))
+      env
+  in
+  env
+;;
+
 let setup_ns env =
   let _ =
     env
@@ -52,9 +81,12 @@ let setup_ns env =
     |> get_builtin "<=" ( <= )
     |> get_builtin ">" ( > )
     |> get_builtin "<" ( < )
+    (* TODO: write a custom equal function to compare the elements if it's a list *)
     |> get_builtin "=" ( == )
     |> list
     |> is_list
+    |> count
+    |> is_empty
   in
   ()
 ;;
