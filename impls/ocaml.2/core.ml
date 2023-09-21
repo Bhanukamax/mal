@@ -18,13 +18,43 @@ let get_builtin symbol op env =
            | _ -> MalAtom False))
       env
   in
-  ()
+  env
+;;
+
+let list env =
+  let _ =
+    Env.set
+      "list"
+      (MalFn (fun a -> MalList { list = a; eol = RParen; listType = List }))
+      env
+  in
+  env
+;;
+
+let is_list env =
+  let _ =
+    Env.set
+      "list?"
+      (MalFn
+         (fun a ->
+           match List.nth_opt a 0 with
+           | Some (MalList _) -> MalAtom True
+           | _ -> MalAtom False))
+      env
+  in
+  env
 ;;
 
 let setup_ns env =
-  get_builtin ">=" ( >= ) env;
-  get_builtin "<=" ( <= ) env;
-  get_builtin ">" ( > ) env;
-  get_builtin "<" ( < ) env;
-  get_builtin "=" ( == ) env
+  let _ =
+    env
+    |> get_builtin ">=" ( >= )
+    |> get_builtin "<=" ( <= )
+    |> get_builtin ">" ( > )
+    |> get_builtin "<" ( < )
+    |> get_builtin "=" ( == )
+    |> list
+    |> is_list
+  in
+  ()
 ;;
