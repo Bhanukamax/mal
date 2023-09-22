@@ -100,6 +100,37 @@ let is_equal env =
   env
 ;;
 
+let prn env =
+  let _ =
+    Env.set
+      "prn"
+      (MalFn
+         (fun a ->
+           match a with
+           | [ MalAtom (Number a) ] | [ MalAtom (Symbol a) ] ->
+             print_endline a;
+             MalAtom Nil
+           | _ ->
+             print_endline "";
+             MalAtom Nil))
+      env
+  in
+  env
+;;
+
+let pr_str env =
+  let _ =
+    Env.set
+      "pr-str"
+      (MalFn
+         (fun a ->
+           let list = List.map (fun a' -> Printer.pr_str a') a in
+           MalAtom (String (String.concat "" list))))
+      env
+  in
+  env
+;;
+
 let setup_ns env =
   let _ =
     env
@@ -114,6 +145,8 @@ let setup_ns env =
     |> count
     |> is_empty
     |> is_equal
+    |> prn
+    |> pr_str
   in
   ()
 ;;
