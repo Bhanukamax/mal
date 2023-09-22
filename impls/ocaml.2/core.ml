@@ -74,24 +74,25 @@ let is_equal env =
   let compare_atoms a b =
     match a, b with
     | MalAtom (Number a'), MalAtom (Number b') -> int_of_string a' == int_of_string b'
+    | MalAtom (String a'), MalAtom (String b') -> String.compare a' b' == 0
+    | _ -> false
+  in
+  let rec eq a =
+    match a with
+    | [ MalAtom Nil; MalAtom Nil ] -> true
+    | [ MalAtom True; MalAtom True ] -> true
+    | [ MalAtom False; MalAtom True ] -> false
+    | [ MalAtom True; MalAtom False ] -> false
+    | [ MalAtom False; MalAtom False ] -> true
+    | [ MalAtom a; MalAtom b ] -> compare_atoms (MalAtom a) (MalAtom b)
+    | [ MalList a; MalList b ] when List.compare_lengths a.list b.list == 0 ->
+      List.for_all2 (fun a b -> eq [ a; b ]) a.list b.list
     | _ -> false
   in
   let equal =
     MalFn
-      (fun a ->
-        let bool =
-          match a with
-          | [ MalAtom Nil; MalAtom Nil ] -> true
-          | [ MalAtom True; MalAtom True ] -> true
-          | [ MalAtom False; MalAtom True ] -> false
-          | [ MalAtom True; MalAtom False ] -> false
-          | [ MalAtom False; MalAtom False ] -> true
-          | [ MalAtom a; MalAtom b ] -> compare_atoms (MalAtom a) (MalAtom b)
-          | [ MalList a; MalList b ] when List.compare_lengths a.list b.list == 0 ->
-            List.for_all2 (fun a b -> compare_atoms a b) a.list b.list
-          | _ -> false
-        in
-        match bool with
+      (fun args ->
+        match eq args with
         | true -> MalAtom True
         | _ -> MalAtom False)
   in
