@@ -155,7 +155,7 @@ let str env =
       "str"
       (MalFn
          (fun a ->
-           let list = List.map (fun a' -> Printer.pr_str a') a in
+           let list = List.map (fun a' -> Printer.pr_str ~print_readably:false a') a in
            MalAtom (String (String.concat "" list))))
       env
   in

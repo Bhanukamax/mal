@@ -2,7 +2,12 @@ open Tokenizer
 open Types
 open Debug_printers
 
-let rec pr_str mal =
+let rec pr_str ?(print_readably = true) mal =
+  let print_string s =
+    match print_readably with
+    | true -> "\"" ^ s ^ "\""
+    | false -> s
+  in
   let string_of_token = function
     | LParen -> "("
     | RParen -> ")"
@@ -10,7 +15,7 @@ let rec pr_str mal =
     | RCurly -> "}"
     | LBracket -> "["
     | RBracket -> "]"
-    | String s -> "\"" ^ s ^ "\""
+    | String s -> print_string s
     | Symbol "'" -> "quote"
     | Symbol "`" -> "quasiquote"
     | Symbol "~" -> "unquote"
