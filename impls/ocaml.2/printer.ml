@@ -7,6 +7,8 @@ let rec pr_str ?(print_readably = true) mal =
     match print_readably with
     | true -> "\"" ^ s ^ "\""
     | false -> s
+    (* | false -> s *)
+    (* | false -> String.escaped ("\"" ^ s ^ "\"") *)
   in
   let string_of_token = function
     | LParen -> "("
@@ -32,7 +34,7 @@ let rec pr_str ?(print_readably = true) mal =
   | MalFn _ -> "#<function>"
   | MalAtom atom -> string_of_token atom
   | MalList list ->
-    let text = List.map pr_str list.list |> String.concat " " in
+    let text = List.map (pr_str ~print_readably) list.list |> String.concat " " in
     let wrap text = function
       | RCurly -> "{" ^ text ^ "}"
       | RBracket -> "[" ^ text ^ "]"
