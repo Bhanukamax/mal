@@ -100,42 +100,6 @@ let is_equal env =
   env
 ;;
 
-let prn env =
-  let _ =
-    Env.set
-      "prn"
-      (MalFn
-         (fun a ->
-           match a with
-           | [ MalAtom (Number a) ] | [ MalAtom (Symbol a) ] ->
-             print_endline a;
-             MalAtom Nil
-           | _ ->
-             print_endline "";
-             MalAtom Nil))
-      env
-  in
-  env
-;;
-
-let println env =
-  let _ =
-    Env.set
-      "println"
-      (MalFn
-         (fun a ->
-           match a with
-           | [ MalAtom (Number a) ] | [ MalAtom (Symbol a) ] ->
-             print_endline a;
-             MalAtom Nil
-           | _ ->
-             print_endline "";
-             MalAtom Nil))
-      env
-  in
-  env
-;;
-
 let pr_str env =
   let _ =
     Env.set
@@ -149,6 +113,20 @@ let pr_str env =
   env
 ;;
 
+let prn env =
+  let _ =
+    Env.set
+      "prn"
+      (MalFn
+         (fun a ->
+           let list = List.map (fun a' -> Printer.pr_str ~print_readably:true a') a in
+           print_endline (String.concat "" list);
+           MalAtom Nil))
+      env
+  in
+  env
+;;
+
 let str env =
   let _ =
     Env.set
@@ -157,6 +135,20 @@ let str env =
          (fun a ->
            let list = List.map (fun a' -> Printer.pr_str ~print_readably:false a') a in
            MalAtom (String (String.concat "" list))))
+      env
+  in
+  env
+;;
+
+let println env =
+  let _ =
+    Env.set
+      "println"
+      (MalFn
+         (fun a ->
+           let list = List.map (fun a' -> Printer.pr_str ~print_readably:false a') a in
+           print_endline (String.concat "" list);
+           MalAtom Nil))
       env
   in
   env

@@ -7,7 +7,7 @@ let rec pr_str ?(print_readably = true) mal =
     match print_readably with
     (* | true -> "\"" ^ s ^ "\"" *)
     | true -> "\"" ^ s ^ "\""
-    | false -> s
+    | _ -> s
     (* | false -> s *)
     (* | false -> String.escaped ("\"" ^ s ^ "\"") *)
   in
@@ -39,10 +39,10 @@ let rec pr_str ?(print_readably = true) mal =
     let wrap text token =
       match token, print_readably with
       (* | RCurly, true -> "\\{" ^ text ^ "\\}" *)
-      | RCurly, _ -> "{" ^ text ^ "}"
-      | RBracket, true -> "[" ^ text ^ "]"
-      | RBracket, false -> "[" ^ text ^ "]"
-      | _ -> "(" ^ text ^ ")"
+      | RCurly, _ -> String.escaped "{" ^ text ^ String.escaped "}"
+      | RBracket, true -> String.escaped "[" ^ text ^ String.escaped "]"
+      | RBracket, _ -> String.escaped "[" ^ text ^ String.escaped "]"
+      | _ -> String.escaped "(" ^ text ^ String.escaped ")"
     in
     wrap text list.eol
 ;;

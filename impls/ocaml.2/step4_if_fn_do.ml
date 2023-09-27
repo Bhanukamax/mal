@@ -6,7 +6,7 @@ open Debug_printers
 open Core
 
 let read x = Reader.read_str x
-let print x = print_endline (Printer.pr_str x)
+let print x = print_endline (Printer.pr_str ~print_readably:true x)
 
 let debug_env value name env =
   Printf.printf "Defining %s as %s" name (Debug_printers.string_of_mal value);
