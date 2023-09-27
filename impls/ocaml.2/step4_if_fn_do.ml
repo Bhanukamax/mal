@@ -113,24 +113,31 @@ let num_func symbol env =
   Env.set symbol (MalFn (fun a -> num_fun operator (List.rev a))) env
 ;;
 
-let rec rep env =
+let rep input env =
+  try input |> read |> eval env |> print with
+  | UN_TERMINATED_STRING_EXCEPTION -> print_endline "end of input"
+  | ILLEGAL_OPERATION e -> print_endline @@ e ^ " end of input"
+  | UNEXPECTED_STATE e -> print_endline @@ e ^ " end of input"
+  | UNDEFINED_SYMBOL e -> print_endline e
+;;
+
+let rec loop env =
   print_string "user> ";
+  (* print_endline (string_of_env env); *)
+  let input = read_line () in
+  let _ = rep input env in
+  loop env
+;;
+
+let main _ =
+  let env = Env.new_env None [] [] in
   let env = num_func "+" env in
   let env = num_func "-" env in
   let env = num_func "/" env in
   let env = num_func "*" env in
   let _ = setup_ns env in
-  (* print_endline (string_of_env env); *)
-  let input = read_line () in
-  let _ =
-    try input |> read |> eval env |> print with
-    | UN_TERMINATED_STRING_EXCEPTION -> print_endline "end of input"
-    | ILLEGAL_OPERATION e -> print_endline @@ e ^ " end of input"
-    | UNEXPECTED_STATE e -> print_endline @@ e ^ " end of input"
-    | UNDEFINED_SYMBOL e -> print_endline e
-  in
-  rep env
+  rep "(def! not (fn* (a) (if a false true)))" env;
+  loop env
 ;;
 
-let env = Env.new_env None [] [] in
-rep env
+main ()

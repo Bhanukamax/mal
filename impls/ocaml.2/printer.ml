@@ -5,6 +5,7 @@ open Debug_printers
 let rec pr_str ?(print_readably = true) mal =
   let print_string s =
     match print_readably with
+    (* | true -> "\"" ^ s ^ "\"" *)
     | true -> "\"" ^ s ^ "\""
     | false -> s
     (* | false -> s *)
@@ -35,9 +36,12 @@ let rec pr_str ?(print_readably = true) mal =
   | MalAtom atom -> string_of_token atom
   | MalList list ->
     let text = List.map (pr_str ~print_readably) list.list |> String.concat " " in
-    let wrap text = function
-      | RCurly -> "{" ^ text ^ "}"
-      | RBracket -> "[" ^ text ^ "]"
+    let wrap text token =
+      match token, print_readably with
+      (* | RCurly, true -> "\\{" ^ text ^ "\\}" *)
+      | RCurly, _ -> "{" ^ text ^ "}"
+      | RBracket, true -> "[" ^ text ^ "]"
+      | RBracket, false -> "[" ^ text ^ "]"
       | _ -> "(" ^ text ^ ")"
     in
     wrap text list.eol
