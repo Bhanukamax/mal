@@ -1,7 +1,9 @@
-all: step0_repl
+BINS = step0_repl  step1_read_print
 
-step0_repl: step0_repl.hs
-	ghc -Wall step0_repl.hs
+all: $(BINS)
+
+$(BINS): %: %.hs
+	ghc -Wall $<
 
 clean:
 	rm -rf step0_repl *.hi *.o
